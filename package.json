@@ -7,6 +7,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "sync-database": "ts-node src/scripts/sync-database.ts",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -27,12 +28,16 @@
     "arg": "^4.1.3",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.0",
+    "helmet": "^3.21.3",
+    "jsonwebtoken": "^8.5.1",
     "pg": "^7.18.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",
-    "sequelize": "^5.21.5",
-    "sequelize-typescript": "^1.1.0"
+    "sequelize": "^5.21.3",
+    "sequelize-typescript": "^1.1.0",
+    "uuid": "^7.0.2",
+    "validatorjs": "^3.18.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^6.14.2",
@@ -60,7 +65,7 @@
     "ts-loader": "^6.2.1",
     "ts-node": "^8.6.2",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.7.5"
   },
   "jest": {
     "moduleFileExtensions": [
