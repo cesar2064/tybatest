@@ -3,7 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { ZOMATO_ENV_CONSTANTS, ZOMATO_CONSTANTS } from '../zomato.constants';
 import { ZomatoCityResponse } from '../models/zomato-city.model';
 import { Observable } from 'rxjs';
-import { map, last } from 'rxjs/operators';
+import { map, last, tap } from 'rxjs/operators';
+import { UserTransactionService } from 'src/modules/user';
+import { UserTransactionName } from 'src/modules/database/models/user-transaction.model';
 
 @Injectable()
 export class ZomatoService {
@@ -15,10 +17,11 @@ export class ZomatoService {
 
     constructor(
         private readonly httpService: HttpService,
-        private readonly config: ConfigService
+        private readonly config: ConfigService,
+        private readonly userTransactionSrv: UserTransactionService
     ) { }
 
-    searchCities(name: string): Observable<ZomatoCityResponse[]> {
+    searchCities(name: string, userId: string): Observable<ZomatoCityResponse[]> {
         return this.httpService.get<ZomatoCityResponse[]>(this.zomatoCitiesPath, {
             params: {
                 q: name
@@ -27,11 +30,15 @@ export class ZomatoService {
                 [ZOMATO_CONSTANTS.API_USER_KEY_HEADER]: this.zomatoApiKey
             }
         }).pipe(
-            map((response)=> response.data)
+            tap(() => this.userTransactionSrv.create({
+                userId,
+                name: UserTransactionName.ZomatoRestaurantsByLocation
+            })),
+            map((response) => response.data)
         )
     }
 
-    getByCoordinates(lat: string, long: string) {
+    getByCoordinates(lat: string, long: string, userId: string) {
         return this.httpService.get<any[]>(this.zomatoGeocodePath, {
             params: {
                 lat,
@@ -41,7 +48,11 @@ export class ZomatoService {
                 [ZOMATO_CONSTANTS.API_USER_KEY_HEADER]: this.zomatoApiKey
             }
         }).pipe(
-            map((response)=> response.data)
+            tap(() => this.userTransactionSrv.create({
+                userId,
+                name: UserTransactionName.ZomatoRestaurantsByLocation
+            })),
+            map((response) => response.data)
         )
     }
 }
